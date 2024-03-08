@@ -7,11 +7,22 @@
 using namespace std;
 using namespace cv;
 
+string gstreamer_pipline(int sensorId, int capture_width, int capture_height, int display_width, int display_height, int framerate, int flip_method)
+{
+    /* nvarguscamerasrc (libatgus GStreamer GST-nvarguscamerasrc) or v4l2*/
+    return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
+    " ! video/x-raw(memory:NVMM), width=(int)" + to_string(capture_width) + 
+    ", height=(int)" + to_string(capture_height) + 
+    ", framerate=(fraction)" + to_string(framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
+    " ! video/x-raw, width=(int)" + to_string(display_width) + ", height=(int)" + to_string(display_height) + 
+    ", format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
+}
+
 int main(int argc, char *argv[])
 {
     /* Variables */
-    string cam0pipline = "nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)640, height=(int)360, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
-    string cam1pipline = "nvarguscamerasrc sensor-id=1 ! video/x-raw(memory:NVMM), width=(int)640, height=(int)360, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
+    string cam0pipline = gstreamer_pipline(0, 640, 360, 640, 360, 30, 0);
+    string cam1pipline = gstreamer_pipline(1, 640, 360, 640, 360, 30, 0);
 
     VideoCapture cam0Capture(cam0pipline, CAP_ANY);
     VideoCapture cam1Capture(cam1pipline, CAP_ANY);
