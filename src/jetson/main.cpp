@@ -35,11 +35,13 @@ string streaming_pipline(int capture_width, int capture_height)
 
     // appsrc ! videoconvert ! videoscale ! 
 
-    // return "appsrc is-live=true ! video/x-raw, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.103 port=6666 sync=false async=false";  
-
     return "appsrc is-live=true ! video/x-raw, format=BGR, width="+ to_string(capture_width * 2) +
     ", height = " + to_string(capture_height) + 
-    ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.200 port=6666 sync=false async=false";  
+    ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.103 port=6666 sync=false async=false";  
+
+    // return "appsrc is-live=true ! video/x-raw, format=BGR, width="+ to_string(capture_width * 2) +
+    // ", height = " + to_string(capture_height) + 
+    // ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.200 port=6666 sync=false async=false";  
 
 }
 
@@ -63,7 +65,8 @@ int main(int argc, char *argv[])
     Mat img0;
     Mat img1;
 
-    Mat imgRes(Size(1280, 360), CV_8UC2);
+    Mat imgRes;
+    // Mat imgRes(Size(1280, 360), CV_8UC2);
 
     /* Capture data from cameras */
     if(!cam0Capture.isOpened() || !cam1Capture.isOpened()) {
