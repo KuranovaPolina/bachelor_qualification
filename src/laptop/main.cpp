@@ -19,22 +19,33 @@ int main(int argc, const char** argv)
 
 // VideoCapture cap("udpsrc name=test port=6666 ! application/x-rtp, encoding-name=H264 ! rtph264depay ! h264parse ! video/x-raw, stream-format=byte-stream ! appsink", CAP_GSTREAMER);
     
-    VideoCapture cap("udpsrc name=test port=6666 ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink", CAP_GSTREAMER);
+// cout << getBuildInformation();
+
+    VideoCapture cap("udpsrc name=test address=192.168.0.200 port=6666 ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR, width=1280, height = 360 ! appsink", CAP_GSTREAMER);
     //  ! application/x-rtp,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! jpegenc snapshot=TRUE ! filesink location=test.jpeg");
 // udpsrc address=192.168.0.200 ! rtph264depay ! x264dec
 
+// Mat img0;
+    // Mat img[2];
+
+    Mat imgRes(Size(1280, 360), CV_8UC2);
+
     while (1)
     {
+
+
         int res = cap.isOpened();
         if (!res) {
             cout << res << endl;
 
             break; 
         } else  {
-            Mat img;
-            cap >> img;
+            cap >> imgRes;
+
+            // cv::split(imgRes, img);
+
             namedWindow("Video", WINDOW_AUTOSIZE);
-            imshow("Video", img);
+            imshow("Video", imgRes);
 
             int key2 = waitKey(20);
             if (key2 == 27) break;

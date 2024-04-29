@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <unistd.h>
+// #include <unistd.h>s
 
 using namespace std;
 using namespace cv;
@@ -16,7 +16,7 @@ string capture_pipline(int sensorId, int capture_width, int capture_height, int 
     ", framerate=(fraction)" + to_string(framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
     " ! video/x-raw, width=(int)" + to_string(display_width) + ", height=(int)" + to_string(display_height) + 
     ", format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
-
+                      
     // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
     // " ! video/x-raw(memory:NVMM), width=" + to_string(capture_width) + 
     // ", height=" + to_string(capture_height) + 
@@ -24,12 +24,23 @@ string capture_pipline(int sensorId, int capture_width, int capture_height, int 
     // " ! video/x-raw, format=(string)I420 ! appsink";
 }
 
-string streaming_pipline()
+string streaming_pipline(int capture_width, int capture_height)
 {
     /* rtsp */
 
     /* udp */
-    return "appsrc ! video/x-raw, format=BGR ! videoconvert ! x264enc ! rtph264pay ! udpsink host=192.168.0.103 port=6666";
+    // return "appsrc ! video/x-raw, format=BGR, width=640, height = 360 ! videoconvert ! x264enc ! rtph264pay ! udpsink host=192.168.0.103 port=6666 name=test";  
+
+    // return "appsrc ! videoconvert ! videoscale ! video/x-raw, width=640, height = 360 ! x264enc ! rtspclientsink location=rtsp://192.168.0.200:6666/test";
+
+    // appsrc ! videoconvert ! videoscale ! 
+
+    // return "appsrc is-live=true ! video/x-raw, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.103 port=6666 sync=false async=false";  
+
+    return "appsrc is-live=true ! video/x-raw, format=BGR, width="+ to_string(capture_width * 2) +
+    ", height = " + to_string(capture_height) + 
+    ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.200 port=6666 sync=false async=false";  
+
 }
 
 int main(int argc, char *argv[])
@@ -38,20 +49,21 @@ int main(int argc, char *argv[])
     int framerate = 30;
     int width = 640;
     int height = 360;
+    int flip_method = 2;
 
-    string cam0pipline = capture_pipline(0, width, height, width, height, framerate, 0);
-    string cam1pipline = capture_pipline(1, width, height, width, height, framerate, 0);
-    string streampipline = streaming_pipline();
+    string cam0pipline = capture_pipline(0, width, height, width, height, framerate, flip_method);
+    string cam1pipline = capture_pipline(1, width, height, width, height, framerate, flip_method);
+    string streampipline = streaming_pipline(width, height);
 
     VideoCapture cam0Capture(cam0pipline, CAP_GSTREAMER); /* others */
     VideoCapture cam1Capture(cam1pipline, CAP_GSTREAMER);
 
-    VideoWriter writer(streampipline, CAP_GSTREAMER, framerate, Size(width, height), true);
+    VideoWriter writer(streampipline, 0, framerate, Size(width * 2, height), true);
 
     Mat img0;
     Mat img1;
 
-    Mat imgRes;
+    Mat imgRes(Size(1280, 360), CV_8UC2);
 
     /* Capture data from cameras */
     if(!cam0Capture.isOpened() || !cam1Capture.isOpened()) {
