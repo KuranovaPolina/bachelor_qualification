@@ -21,19 +21,15 @@ int main(int argc, const char** argv)
     
 // cout << getBuildInformation();
 
-    VideoCapture cap("udpsrc name=test address=192.168.0.200 port=6666 ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR, width=1280, height = 360 ! appsink", CAP_GSTREAMER);
+    VideoCapture cap("udpsrc name=test port=6666 ! application/x-rtp, encoding-name=H264 ! rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR, width=1280, height = 360 ! appsink", CAP_GSTREAMER);
     //  ! application/x-rtp,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! jpegenc snapshot=TRUE ! filesink location=test.jpeg");
 // udpsrc address=192.168.0.200 ! rtph264depay ! x264dec
 
-// Mat img0;
-    // Mat img[2];
-
-    Mat imgRes(Size(1280, 360), CV_8UC2);
+    Mat imgRes;
+    Mat img1, img2;
 
     while (1)
     {
-
-
         int res = cap.isOpened();
         if (!res) {
             cout << res << endl;
@@ -43,9 +39,17 @@ int main(int argc, const char** argv)
             cap >> imgRes;
 
             // cv::split(imgRes, img);
+            img1 = imgRes(Range(0, 359), Range(0, 639));
+            img2 = imgRes(Range(0, 359), Range(640, 1279));
 
             namedWindow("Video", WINDOW_AUTOSIZE);
             imshow("Video", imgRes);
+
+            namedWindow("Video1", WINDOW_AUTOSIZE);
+            imshow("Video1", img1);
+
+            namedWindow("Video2", WINDOW_AUTOSIZE);
+            imshow("Video2", img2);
 
             int key2 = waitKey(20);
             if (key2 == 27) break;
