@@ -45,16 +45,22 @@ string Stream::capture_pipline(int sensorId)
     return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
     " ! video/x-raw(memory:NVMM), width=" + to_string(capture_width) + 
     ", height=" + to_string(capture_height) + 
-    ", framerate=(fraction)" + to_string(framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
+    ", framerate=" + to_string(framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
     " ! video/x-raw, width=" + to_string(display_width) + ", height=" + to_string(display_height) + 
     ", format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
+
+    // return "v4l2src device=/dev/video0 ! video/x-raw, width=" + to_string(capture_width) + 
+    // ", height=" + to_string(capture_height) + 
+    // ", framerate=" + to_string(framerate) + "/1 ! nvvidconv ! video/x-raw(memory:NVMM), width=" + 
+    // to_string(display_width) + ", height=" + to_string(display_height) + 
+    // ", format=BGRx ! nvvidconv ! video/x-raw, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
 
 }
 
 string Stream::streaming_pipline()
 {
-    return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(capture_width * 2) +
-    ", height = " + to_string(capture_height) + 
+    return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(display_width * 2) +
+    ", height = " + to_string(display_height) + 
     ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.103 port=6666 sync=false async=false";  
 
 }

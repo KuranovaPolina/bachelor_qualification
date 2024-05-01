@@ -10,14 +10,24 @@ class Stream
 {
 private:
 /* Capture params. */
-    int capture_width = 0;
+    int capture_width = 0;   /*  > 0*/
     int capture_height = 0;
 
     int display_width = 0;
     int display_height = 0;
 
-    int framerate = 0;
+    int framerate = 0;   /* [1 - 120] */
 
+    /*
+        0 - identity - no rotation (default)
+        1 - counterclockwise - 90 degrees
+        2 - rotate - 180 degrees
+        3 - clockwise - 90 degrees
+        4 - horizontal flip
+        5 - upper right diagonal flip
+        6 - vertical flip
+        7 - upper-left diagonal
+    */
     int flip_method = 0;
 
     int format = 0;
