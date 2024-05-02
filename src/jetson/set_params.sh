@@ -13,6 +13,11 @@ if [ "$1" = "-D" ]
         framerate=120
         format=0
 
+        mtu=1400
+        host="\"192.168.0.101\""
+        port=6666
+        concat_type=0
+
     else
         echo "Use previous params"
 
@@ -22,6 +27,11 @@ if [ "$1" = "-D" ]
         display_height=$(cat 'params.json' | jq '.stream_params.display_height')
         framerate=$(cat 'params.json' | jq '.stream_params.framerate')
         format=$(cat 'params.json' | jq '.stream_params.format')
+
+        mtu=$(cat 'params.json' | jq '.stream_params.mtu')
+        host=$(cat 'params.json' | jq '.stream_params.host')
+        port=$(cat 'params.json' | jq '.stream_params.port')
+        concat_type=$(cat 'params.json' | jq '.stream_params.concat_type')
 fi
 
 while [ "$#" -gt 0 ]
@@ -36,6 +46,12 @@ while [ "$#" -gt 0 ]
             --framerate) framerate="$2"; shift;;
 
             --format) format="$2"; shift;;
+
+            --mtu) mtu="$2"; shift;;
+            --host) host="\"$2\""; shift;;
+
+            --port) port="$2"; shift;;
+            --concat_type) concat_type="$2"; shift;;
         esac
         shift
 done
@@ -47,7 +63,12 @@ echo "{
         \"display_width\": $display_width,
         \"display_height\": $display_height,
         \"framerate\": $framerate,
-        \"format\": $format
+        \"format\": $format,
+
+        \"mtu\": $mtu,
+        \"host\": $host,
+        \"port\": $port,
+        \"concat_type\": $concat_type        
     }
 }" > params.json
 

@@ -26,6 +26,13 @@ Stream::Stream()
 
     format = fs["stream_params"]["format"];
 
+    mtu = fs["stream_params"]["mtu"];
+    host = fs["stream_params"]["host"].string();
+
+    port = fs["stream_params"]["port"];
+
+    concat_type = fs["stream_params"]["concat_type"];
+
     fs.release();
 }
 
@@ -37,7 +44,11 @@ void Stream::showParams()
         "\ndisplay_height: " + to_string(display_height) +
         "\nframerate: " + to_string(framerate)  +
         "\nflip_method: " + to_string(flip_method) +
-        "\nformat: " + to_string(format) << endl;
+        "\nformat: " + to_string(format) +
+        "\nmtu: " + to_string(mtu) +
+        "\nhost: " + host  +
+        "\nport: " + to_string(port) +
+        "\nconcat_type: " + to_string(concat_type) << endl;
 }
 
 string Stream::capture_pipline(int sensorId)
@@ -59,10 +70,15 @@ string Stream::capture_pipline(int sensorId)
 
 string Stream::streaming_pipline()
 {
-    return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(display_width * 2) +
-    ", height = " + to_string(display_height) + 
-    ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.103 port=6666 sync=false async=false";  
+    // return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(display_width * 2) +
+    // ", height = " + cc + 
+    // ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.101 port=6666";  
 
+    return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=" +
+    to_string(mtu) + " ! udpsink host=" + host + " port=" + to_string(port);  
+
+
+    // return "appsrc is-live=true ! videoconvert ! videoscale ! video/x-raw, format=I420 ! x264enc speed-preset=ultrafast bitrate=800 ! video/x-h264 ! rtspclientsink location=rtsp://192.168.0.101:6666/test";
 }
 
 int Stream::process()
@@ -74,12 +90,25 @@ int Stream::process()
     VideoCapture cam0Capture(cam0pipline, CAP_GSTREAMER); /* others */
     VideoCapture cam1Capture(cam1pipline, CAP_GSTREAMER);
 
-    VideoWriter writer(streampipline, 0, framerate, Size(capture_width * 2, capture_height), true);
+    Size size;
+
+    if (concat_type == 1)
+    {
+        size = Size(display_width * 2, display_height);      
+    }
+    else
+    {
+        size = Size(display_width, display_height * 2); 
+    }
+
+    VideoWriter writer(streampipline, CAP_GSTREAMER, 0, framerate, size, true);        
 
     Mat img0;
     Mat img1;
 
     Mat imgRes;
+
+    cout << getBuildInformation();
 
     if(!cam0Capture.isOpened() || !cam1Capture.isOpened()) {
         cout << "Failed to open camera." << endl;
@@ -100,11 +129,17 @@ int Stream::process()
             return (-1);
 	    }
 
-/* joining by height */
-        hconcat(img0, img1, imgRes);
+        if (concat_type == 1)
+        {
+            /* joining by height */
+            hconcat(img0, img1, imgRes);
+        }
+        else
+        {
+            /* joining by width */
+            vconcat(img0, img1, imgRes);
+        }
 
-/* joining by width */
-        // vconcat(img0, img1, imgRes);
 
         imshow("Pair",imgRes);
 

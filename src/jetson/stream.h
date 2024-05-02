@@ -33,6 +33,16 @@ private:
     int format = 0;
 
 /* Stream params. */
+    
+    int mtu = 1400;
+    string host = "192.168.0.101";
+    int port = 6666;
+
+    /*
+        0 - horisontal
+        1 - vertical
+    */
+    int concat_type = 0;
 
 public:
     Stream();
