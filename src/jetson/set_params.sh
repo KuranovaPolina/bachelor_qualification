@@ -1,9 +1,27 @@
+#!/bin/bash
+
 capture_width=640
 capture_height=360
 display_width=640
 display_height=360
 framerate=120
-format=2
+format=0
+
+while [ "$#" -gt 0 ]
+    do
+        case $1 in 
+            --capture_width) capture_width="$2"; shift;;
+            --capture_height) capture_height="$2"; shift;;
+
+            --display_width) display_width="$2"; shift;;
+            --display_height) display_height="$2"; shift;;
+
+            --framerate) framerate="$2"; shift;;
+
+            --format) format="$2"; shift;;
+        esac
+        shift
+done
 
 echo "{
     \"stream_params\": {
