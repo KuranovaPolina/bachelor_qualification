@@ -11,6 +11,8 @@ class Stream
 private:
     int port = 0;
 
+    int concat_type = 0;
+
 public:
     Stream();
 
