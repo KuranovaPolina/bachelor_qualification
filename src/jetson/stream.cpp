@@ -16,21 +16,14 @@ Stream::Stream()
 
     capture_width = fs["stream_params"]["capture_width"];
     capture_height = fs["stream_params"]["capture_height"];
-
     display_width = fs["stream_params"]["display_width"];
     display_height = fs["stream_params"]["display_height"];
-
     framerate = fs["stream_params"]["framerate"];
-
     flip_method = fs["stream_params"]["flip_method"];
-
-    format = fs["stream_params"]["format"];
 
     mtu = fs["stream_params"]["mtu"];
     host = fs["stream_params"]["host"].string();
-
     port = fs["stream_params"]["port"];
-
     concat_type = fs["stream_params"]["concat_type"];
 
     fs.release();
@@ -44,7 +37,6 @@ void Stream::showParams()
         "\ndisplay_height: " + to_string(display_height) +
         "\nframerate: " + to_string(framerate)  +
         "\nflip_method: " + to_string(flip_method) +
-        "\nformat: " + to_string(format) +
         "\nmtu: " + to_string(mtu) +
         "\nhost: " + host  +
         "\nport: " + to_string(port) +
@@ -92,13 +84,19 @@ int Stream::process()
 
     Size size;
 
-    if (concat_type == 1)
+    if (concat_type == 0)
     {
         size = Size(display_width * 2, display_height);      
     }
-    else
+    else if (concat_type == 0)
     {
         size = Size(display_width, display_height * 2); 
+    }
+    else
+    {
+        cout << "wrong concat_type" << endl;
+
+        return (-1);        
     }
 
     VideoWriter writer(streampipline, CAP_GSTREAMER, 0, framerate, size, true);        
@@ -129,15 +127,21 @@ int Stream::process()
             return (-1);
 	    }
 
-        if (concat_type == 1)
+        if (concat_type == 0)
         {
             /* joining by height */
             hconcat(img0, img1, imgRes);
         }
-        else
+        else if (concat_type == 1)
         {
             /* joining by width */
             vconcat(img0, img1, imgRes);
+        }
+        else
+        {
+            cout << "wrong concat_type" << endl;
+
+            break;
         }
 
 

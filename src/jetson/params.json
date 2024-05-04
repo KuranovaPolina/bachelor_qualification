@@ -5,9 +5,9 @@
         "display_width": 640,
         "display_height": 360,
         "framerate": 120,
-        "format": 0,
+        "flip_method": 0,
 
-        "mtu": 2000,
+        "mtu": 1400,
         "host": "192.168.0.101",
         "port": 6666,
         "concat_type": 0        

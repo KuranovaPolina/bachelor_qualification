@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ "$1" = "-D" ]
     then 
         echo "Setting default params"
@@ -11,7 +10,7 @@ if [ "$1" = "-D" ]
         display_width=640
         display_height=360
         framerate=120
-        format=0
+        flip_method=0
 
         mtu=1400
         host="\"192.168.0.101\""
@@ -26,7 +25,7 @@ if [ "$1" = "-D" ]
         display_width=$(cat 'params.json' | jq '.stream_params.display_width')
         display_height=$(cat 'params.json' | jq '.stream_params.display_height')
         framerate=$(cat 'params.json' | jq '.stream_params.framerate')
-        format=$(cat 'params.json' | jq '.stream_params.format')
+        flip_method=$(cat 'params.json' | jq '.stream_params.flip_method')
 
         mtu=$(cat 'params.json' | jq '.stream_params.mtu')
         host=$(cat 'params.json' | jq '.stream_params.host')
@@ -45,7 +44,7 @@ while [ "$#" -gt 0 ]
 
             --framerate) framerate="$2"; shift;;
 
-            --format) format="$2"; shift;;
+            --flip_method) flip_method="$2"; shift;;
 
             --mtu) mtu="$2"; shift;;
             --host) host="\"$2\""; shift;;
@@ -63,7 +62,7 @@ echo "{
         \"display_width\": $display_width,
         \"display_height\": $display_height,
         \"framerate\": $framerate,
-        \"format\": $format,
+        \"flip_method\": $flip_method,
 
         \"mtu\": $mtu,
         \"host\": $host,

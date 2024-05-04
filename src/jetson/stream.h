@@ -16,7 +16,7 @@ private:
     int display_width = 0;
     int display_height = 0;
 
-    int framerate = 0;   /* [1 - 120] */
+    int framerate = 0;   /* fps [1 - 120] */
 
     /*
         0 - identity - no rotation (default)
@@ -30,8 +30,6 @@ private:
     */
     int flip_method = 0;
 
-    int format = 0;
-
 /* Stream params. */
     
     int mtu = 1400;
@@ -39,8 +37,8 @@ private:
     int port = 6666;
 
     /*
-        0 - horisontal
-        1 - vertical
+        0 - horisontal, by height
+        1 - vertical, by width
     */
     int concat_type = 0;
 
