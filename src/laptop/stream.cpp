@@ -41,8 +41,6 @@ int Stream::process()
 
     Size s;
 
-    // Size s1, s2;
-
     int display_width = 0, display_height = 0;
 
     int start_row0 = 0, end_row0 = 0, start_col0 = 0, end_col0 = 0,
@@ -58,8 +56,8 @@ int Stream::process()
         } else  {
             cap >> imgRes;
 
-            namedWindow("Video", WINDOW_AUTOSIZE);
-            imshow("Video", imgRes);
+            // namedWindow("Video", WINDOW_AUTOSIZE);
+            // imshow("Video", imgRes);
 
             s = imgRes.size();
 
@@ -105,8 +103,6 @@ int Stream::process()
                 break;                 
             }
 
-            // cout << s.height << " " << s.width << endl;
-
             img1 = imgRes(Range(start_row0, end_row0), Range(start_col0, end_col0));
             img2 = imgRes(Range(start_row1, end_row1), Range(start_col1, end_col1));
 
@@ -116,17 +112,15 @@ int Stream::process()
             namedWindow("Video2", WINDOW_AUTOSIZE);
             imshow("Video2", img2);
 
-            // s1 = img1.size();
-            // s2 = img2.size();
-
-            // cout << s1.height << " " << s1.width << endl;
-            // cout << s2.height << " " << s2.width << endl;
-
             int key2 = waitKey(1);
             if (key2 == 27) break;
         }
 
     }
+
+    cap.release();
+
+    cv::destroyAllWindows();
 
     return 0;
 }
