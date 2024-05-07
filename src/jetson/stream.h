@@ -32,7 +32,7 @@ private:
 
 /* Stream params. */
     
-    int mtu = 1400;
+    int mtu = 1400;  /* guint value range.  1500 bytes is the maximum mtu size. by experiment min 28 (8 udp header + 20 ip header) */
     string host = "192.168.0.101";
     int port = 6666;
 

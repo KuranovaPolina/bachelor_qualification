@@ -5,6 +5,8 @@
 
 #include "stream.h"
 
+#define GUI
+
 using namespace std;
 using namespace cv;
 
@@ -52,6 +54,12 @@ string Stream::capture_pipline(int sensorId)
     " ! video/x-raw, width=" + to_string(display_width) + ", height=" + to_string(display_height) + 
     ", format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
 
+    // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
+    // " sensor-mode = " + to_string(capture_width) + 
+    // " ! video/x-raw(memory:NVMM) ! nvvidconv flip-method=" + to_string(flip_method) + 
+    // " ! video/x-raw, width=" + to_string(display_width) + ", height=" + to_string(display_height) + 
+    // ", format=BGRx, framerate=" + to_string(framerate) + "/1 ! videoconvert ! video/x-raw, format=BGR ! appsink";
+
     // return "v4l2src device=/dev/video0 ! video/x-raw, width=" + to_string(capture_width) + 
     // ", height=" + to_string(capture_height) + 
     // ", framerate=" + to_string(framerate) + "/1 ! nvvidconv ! video/x-raw(memory:NVMM), width=" + 
@@ -63,14 +71,20 @@ string Stream::capture_pipline(int sensorId)
 string Stream::streaming_pipline()
 {
     // return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(display_width * 2) +
-    // ", height = " + cc + 
+    // ", height = " + to_string(display_height) + 
     // ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.101 port=6666";  
 
     return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=" +
     to_string(mtu) + " ! udpsink host=" + host + " port=" + to_string(port);  
 
 
-    // return "appsrc is-live=true ! videoconvert ! videoscale ! video/x-raw, format=I420 ! x264enc speed-preset=ultrafast bitrate=800 ! video/x-h264 ! rtspclientsink location=rtsp://192.168.0.101:6666/test";
+    // return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x265enc ! rtph265pay mtu=" +
+    // to_string(mtu) + " ! udpsink host=" + host + " port=" + to_string(port); 
+
+    // return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=" +
+    // to_string(mtu) + " ! tcpclientsink host=" + host + " port=" + to_string(port);  
+
+    // return "appsrc is-live=true ! videoconvert ! videoscale ! video/x-raw, format=I420 ! x264enc speed-preset=ultrafast bitrate=800 ! video/x-h264 ! rtmp2sink location=rtmp://192.168.0.101:6666/test";
 }
 
 int Stream::process()
@@ -106,19 +120,21 @@ int Stream::process()
 
     Mat imgRes;
 
-    cout << getBuildInformation();
+    // cout << getBuildInformation();
 
     if(!cam0Capture.isOpened() || !cam1Capture.isOpened()) {
         cout << "Failed to open camera." << endl;
         return (-1);
     }
 
+#ifdef GUI
     namedWindow("Pair", WINDOW_AUTOSIZE);
+#endif
 
     while(1)
     {
         if (!cam0Capture.read(img0)) {
-            cout << "Capture 0 ead error" << endl;
+            cout << "Capture 0 read error" << endl;
             return (-1);
 	    }
 
@@ -144,9 +160,9 @@ int Stream::process()
             break;
         }
 
-
+#ifdef GUI
         imshow("Pair",imgRes);
-
+#endif
 
     /* Packing into a stream */
 
@@ -159,9 +175,11 @@ int Stream::process()
 
         writer.write(imgRes);
 
+#ifdef GUI
         int keycode = cv::waitKey(1)/* & 0xff*/ ; 
         if (keycode == 27) 
             break ;
+#endif
     }
 
     /* Closing */
