@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        cout << "[ main ] Stream is not open! \n";
+        cout << "[ main ] Stream is not opened! \n";
 
         return -1;
     }

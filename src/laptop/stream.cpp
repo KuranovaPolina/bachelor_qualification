@@ -65,8 +65,8 @@ void Stream::showParams()
 
 string Stream::capture_pipline()
 {
-    return std::format("udpsrc port={} ! application/x-rtp, encoding-name=H264 !\
-     rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR ! appsink", 
+    return std::format("udpsrc port={} ! application/x-rtp, encoding-name=H264 ! \
+ rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR ! appsink", 
         to_string(port));
 }
 
@@ -88,14 +88,20 @@ int Stream::process()
 
     while (1)
     {
-        int res = cap.isOpened();
-        if (!res) {
-            cout << res << endl;
+        if (!cap.isOpened()) {
+            cout << "[ Stream::process ] Capture error - capture is not opened! "  << endl;
 
             return -1; 
         } 
 
-        cap >> imgRes;
+        // cap >> imgRes;
+
+        if (!cap.read(imgRes)) 
+        {
+            cout << "[ Stream::process ] Capture error - capture reading error! "  << endl;
+
+            return -1; 
+        }
 
         // namedWindow("Video", WINDOW_AUTOSIZE);
         // imshow("Video", imgRes);
