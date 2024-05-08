@@ -1,12 +1,14 @@
 {
-    "stream_params": {
-        "capture_width": 1280,
-        "capture_height": 720,
-        "display_width": 1280,
-        "display_height": 720,
-        "framerate": 120,
-        "flip_method": 0,
+    "capture_params": {
+        "camera_modes": "imx219.json",
 
+        "sensor_mode": 5,
+        "display_width": 1200,
+        "display_height": 720,
+        "display_framerate": 119,
+        "flip_method": 0
+    },
+    "stream_params": {    
         "mtu": 1400,
         "host": "192.168.0.105",
         "port": 6666,

@@ -1,0 +1,32 @@
+{
+    "0": {
+        "width": 3264,
+        "height": 2464,
+        "framerate": 21
+    },
+    "1": {
+        "width": 3264,
+        "height": 1848,
+        "framerate": 28
+    },
+    "2": {
+        "width": 1920,
+        "height": 1080,
+        "framerate": 30
+    },
+    "3": {
+        "width": 1640,
+        "height": 1232,
+        "framerate": 30
+    },
+    "4": {
+        "width": 1280,
+        "height": 720,
+        "framerate": 60
+    },
+    "5": {
+        "width": 1280,
+        "height": 720,
+        "framerate": 120
+    }
+}

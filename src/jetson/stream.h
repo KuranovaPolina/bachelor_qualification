@@ -10,13 +10,18 @@ class Stream
 {
 private:
 /* Capture params. */
+    bool stream_inited = false;
+
+    int sensor_mode = 0;
+
     int capture_width = 0;   /*  > 0*/
     int capture_height = 0;
+    int capture_framerate = 0;
 
     int display_width = 0;
     int display_height = 0;
 
-    int framerate = 0;   /* fps [1 - 120] */
+    /* int display_framerate = 0; */  /* fps [1 - 120] */
 
     /*
         0 - identity - no rotation (default)
@@ -30,6 +35,8 @@ private:
     */
     int flip_method = 0;
 
+    // int left0
+
 /* Stream params. */
     
     int mtu = 1400;  /* guint value range.  1500 bytes is the maximum mtu size. by experiment min 28 (8 udp header + 20 ip header) */
@@ -42,8 +49,10 @@ private:
     */
     int concat_type = 0;
 
+    int readParams(string params_filename);
+
 public:
-    Stream();
+    Stream(string params_filename);
 
     void showParams();
 
@@ -52,6 +61,8 @@ public:
     string streaming_pipline();
 
     int process();
+
+    bool isOpened();
 
 };
 

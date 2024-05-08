@@ -10,35 +10,115 @@
 using namespace std;
 using namespace cv;
 
-Stream::Stream()
+int Stream::readParams(string params_filename)
 {
-    cout << "Hello, I'm a new stream!" << endl;
+    if (params_filename.empty() || params_filename == "")
+    {
+        cout << "Incorrect filename with stream params! \n";
+        return -1;
+    }
 
-    FileStorage fs("params.json", FileStorage::READ);
+    FileStorage fs(params_filename, FileStorage::READ);
 
-    capture_width = fs["stream_params"]["capture_width"];
-    capture_height = fs["stream_params"]["capture_height"];
-    display_width = fs["stream_params"]["display_width"];
-    display_height = fs["stream_params"]["display_height"];
-    framerate = fs["stream_params"]["framerate"];
-    flip_method = fs["stream_params"]["flip_method"];
+    string camera_modes;
 
-    mtu = fs["stream_params"]["mtu"];
-    host = fs["stream_params"]["host"].string();
-    port = fs["stream_params"]["port"];
-    concat_type = fs["stream_params"]["concat_type"];
+    if (fs.isOpened())
+    {    
+        camera_modes = fs["capture_params"]["camera_modes"].string();
 
-    fs.release();
+        sensor_mode = fs["capture_params"]["sensor_mode"];
+        display_width = fs["capture_params"]["display_width"];
+        display_height = fs["capture_params"]["display_height"];
+        /* display_framerate = fs["capture_params"]["display_framerate"]; */
+        flip_method = fs["capture_params"]["flip_method"];
+
+        mtu = fs["stream_params"]["mtu"];
+        host = fs["stream_params"]["host"].string();
+        port = fs["stream_params"]["port"];
+        concat_type = fs["stream_params"]["concat_type"];
+
+        fs.release();
+
+        if (concat_type < 0 || concat_type > 1)
+        {
+            cout << "Incorrect concatenate type ! \n";
+            return -1;
+        }
+
+        if (flip_method < 0 || flip_method > 7)
+        {
+            cout << "Incorrect flip method ! \n";
+            return -1;
+        }
+    }
+    else
+    {
+        cout << "File " + params_filename + " is not opened! \n";
+
+        return -1;
+    }
+
+    if (camera_modes.empty() || camera_modes == "")
+    {
+        cout << "Incorrect filename with camera modes! \n";
+        return -1;
+    }
+
+    FileStorage fs_modes(camera_modes, FileStorage::READ);
+
+    if (fs_modes.isOpened())
+    { 
+        if (fs_modes[to_string(sensor_mode)].empty())
+        {
+            fs_modes.release();
+
+            cout << "Incorrect sensor mode! \n";
+
+            return -1;
+        }
+
+        capture_width = fs_modes[to_string(sensor_mode)]["width"];
+        capture_height = fs_modes[to_string(sensor_mode)]["height"];
+        capture_framerate = fs_modes[to_string(sensor_mode)]["framerate"];
+
+        fs_modes.release();
+    }
+    else
+    {
+        cout << "File " + camera_modes + " is not opened! \n";
+        return -1;
+    }
+
+    return 0;
+}
+
+Stream::Stream(string params_filename)
+{
+    string camera_modes;
+    cout << "Hello, I'm a new Stream!" << endl;
+
+    if (readParams(params_filename) != -1)
+    {
+        stream_inited = true;
+    }
+
+}
+
+bool Stream::isOpened()
+{
+    return stream_inited;
 }
 
 void Stream::showParams()
 {
-    cout << "capture_width: " + to_string(capture_width) +
+    cout << "sensor_mode: " + to_string(sensor_mode) +
+        "\ncapture_width: " + to_string(capture_width) +
         "\ncapture_height: " + to_string(capture_height) +
+        "\ncapture_framerate: " + to_string(capture_framerate) +
         "\ndisplay_width: " + to_string(display_width) +
         "\ndisplay_height: " + to_string(display_height) +
-        "\nframerate: " + to_string(framerate)  +
-        "\nflip_method: " + to_string(flip_method) +
+        /* "\nframerate: " + to_string(display_framerate)  + */
+        "\n\nflip_method: " + to_string(flip_method) +
         "\nmtu: " + to_string(mtu) +
         "\nhost: " + host  +
         "\nport: " + to_string(port) +
@@ -47,11 +127,13 @@ void Stream::showParams()
 
 string Stream::capture_pipline(int sensorId)
 {
-    return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
+    return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + " sensor-mode=" + to_string(sensor_mode) + /*  */
     " ! video/x-raw(memory:NVMM), width=" + to_string(capture_width) + 
     ", height=" + to_string(capture_height) + 
-    ", framerate=" + to_string(framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
-    " ! video/x-raw, width=" + to_string(display_width) + ", height=" + to_string(display_height) + 
+    ", framerate=" + to_string(capture_framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
+    // " ! nvvidconv flip-method=" + to_string(flip_method) + 
+    " ! video/x-raw, width=" + to_string(display_width) + 
+    ", height=" + to_string(display_height) + /* ", framerate=" + to_string(display_framerate) + /1*/
     ", format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
 
     // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
@@ -113,7 +195,7 @@ int Stream::process()
         return (-1);        
     }
 
-    VideoWriter writer(streampipline, CAP_GSTREAMER, 0, framerate, size, true);        
+    VideoWriter writer(streampipline, CAP_GSTREAMER, 0, capture_framerate, size, true);        
 
     Mat img0;
     Mat img1;
