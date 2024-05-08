@@ -13,7 +13,13 @@ int main(int argc, char *argv[])
     {
         stream.showParams();
 
-        // stream.process();        
+        stream.process();        
+    }
+    else
+    {
+        cout << "[main] Stream is not opened! \n";
+
+        return -1;
     }
 
     return 0;
