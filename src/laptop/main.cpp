@@ -6,11 +6,20 @@
 
 int main(int argc, char *argv[])
 {
-    Stream stream = Stream();
+    Stream stream = Stream("params.json");
 
-    stream.showParams();
+    if (stream.isOpened())
+    {
+        stream.showParams();
 
-    stream.process();
+        stream.process();
+    }
+    else
+    {
+        cout << "[ main ] Stream is not open! \n";
+
+        return -1;
+    }
 
     return 0;
 }
