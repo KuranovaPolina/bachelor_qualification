@@ -1,6 +1,7 @@
 /* stream.cpp for laptop */
 
 #include <iostream>
+
 #include <opencv2/opencv.hpp>
 
 #include "stream.h"
@@ -93,8 +94,6 @@ int Stream::process()
 
             return -1; 
         } 
-
-        // cap >> imgRes;
 
         if (!cap.read(imgRes)) 
         {
