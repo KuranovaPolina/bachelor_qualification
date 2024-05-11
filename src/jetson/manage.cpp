@@ -9,10 +9,16 @@
 #include <arpa/inet.h>
 
 #include "manage.h"
+#include "stream.h"
 
 using namespace std;
 
-int processManage()
+Manager::Manager(Stream *new_pstream)
+{
+    pStream = new_pstream;
+}
+
+int Manager::process()
 {
     struct sockaddr_in addr, newAddr;
     int port = PORT;
@@ -27,7 +33,9 @@ int processManage()
 
     FILE *fileDesc;
 
-    string fileName = "test.json";
+    string fileName = "params.json";
+
+    string answer_buf;
 
     if (sockDescr < 0)
     {
@@ -91,7 +99,20 @@ int processManage()
                 case 1:
                     cout << "[ processManage ] get 1! " << endl;
 
-                    bytes_send = send(newSockDescr, command_buf, sizeof(command_buf), 0);
+                    pStream->stopStream();
+
+                    while (1)
+                    {
+                        if (!pStream->isActive())
+                        {
+                            break;
+                        }
+                    }
+
+                    answer_buf = to_string(pStream->isActive());
+
+                    bytes_send = send(newSockDescr, answer_buf.c_str(), 
+                        sizeof(answer_buf.c_str()), 0);
 
                     if (bytes_send <= 0)
                     {
@@ -105,7 +126,75 @@ int processManage()
                     break;
 
                 case 2:
-                    cout << "[ processManage ] get 2! Waiting a file! " << endl;
+                    cout << "[ processManage ] get 2! " << endl;
+
+                    pStream->startStream();
+
+                    while (1)
+                    {
+                        if (pStream->isActive())
+                        {
+                            break;
+                        }
+                    }
+
+                    answer_buf = to_string(pStream->isActive());
+
+                    bytes_send = send(newSockDescr, answer_buf.c_str(), 
+                        sizeof(answer_buf.c_str()), 0);
+
+                    if (bytes_send <= 0)
+                    {
+                        cout << "[ ERROR processManage ] Can't send! " << endl;
+
+                        return -1; 
+                    }
+
+                    cout << std::format("[ processManage ] Send: {} bytes \n", bytes_send);
+
+                    break;
+
+                case 3:
+                    cout << "[ processManage ] get 3! " << endl;
+
+                    pStream->stopStream();
+
+                    while (1)
+                    {
+                        if (!pStream->isActive())
+                        {
+                            break;
+                        }
+                    }
+
+                    pStream->startStream();  
+
+                    while (1)
+                    {
+                        if (pStream->isActive())
+                        {
+                            break;
+                        }
+                    }
+
+                    answer_buf = to_string(pStream->isActive());
+
+                    bytes_send = send(newSockDescr, answer_buf.c_str(), 
+                        sizeof(answer_buf.c_str()), 0);
+
+                    if (bytes_send <= 0)
+                    {
+                        cout << "[ ERROR processManage ] Can't send! " << endl;
+
+                        return -1; 
+                    }
+
+                    cout << std::format("[ processManage ] Send: {} bytes \n", bytes_send);
+
+                    break;
+
+                case 4:
+                    cout << "[ processManage ] get 4! Waiting a file! " << endl;
 
                     /* while(1) */
                     {
@@ -115,7 +204,7 @@ int processManage()
                         if (file_bytes_read > 0)
                         {
                             cout << std::format("[ processManage ] Rec: {} bytes \n", file_bytes_read);
-
+//mutex file?
                             fileDesc = fopen(fileName.c_str(), "w");
 
                             if (fileDesc == NULL)

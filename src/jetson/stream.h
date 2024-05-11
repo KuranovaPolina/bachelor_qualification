@@ -12,7 +12,13 @@ class Stream
 {
 private:
 /* Capture params. */
+    string params_filename;
+
     bool stream_inited = false;
+
+    bool stream_stopped = false;
+
+    bool stream_active = false;
 
     int sensor_mode = 0;
 
@@ -35,15 +41,12 @@ private:
         6 - vertical flip
         7 - upper-left diagonal
     */
-    int flip_method = 0;
-
-    // int left0
+    int flip_method = 0;  //2
 
 /* Stream params. */
-    
-    int mtu = 1400;  /* guint value range.  1500 bytes is the maximum mtu size. by experiment min 28 (8 udp header + 20 ip header) */
-    string host = "192.168.0.101";
-    int port = 6666;
+    int mtu = 0;  /* guint value range.  1500 bytes is the maximum mtu size. by experiment min 28 (8 udp header + 20 ip header) */
+    string host = "0.0.0.0";
+    int port = 0;
 
     /*
         0 - horisontal, by height
@@ -51,10 +54,12 @@ private:
     */
     int concat_type = 0;
 
-    int readParams(string params_filename);
+    int readParams();      
 
 public:
-    Stream(string params_filename);
+    Stream(string filename);
+
+    int initStream();
 
     void showParams();
 
@@ -64,8 +69,15 @@ public:
 
     int process();
 
-    bool isOpened();
+    bool isInited();
 
+    bool isActive();
+
+    bool isStopped();
+
+    void stopStream();
+
+    void startStream();
 };
 
 #endif  /* STREAM_H */

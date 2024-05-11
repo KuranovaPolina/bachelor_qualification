@@ -10,7 +10,7 @@
 using namespace std;
 using namespace cv;
 
-int Stream::readParams(string params_filename)
+int Stream::readParams()
 {
     if (params_filename.empty() || params_filename == "")
     {
@@ -18,7 +18,7 @@ int Stream::readParams(string params_filename)
 
         return -1;
     }
-
+//mutex file?
     FileStorage fs(params_filename, FileStorage::READ);
 
     string camera_modes;
@@ -95,23 +95,42 @@ int Stream::readParams(string params_filename)
     return 0;
 }
 
-Stream::Stream(string params_filename)
+Stream::Stream(string filename)
 {
     cout << "[ Stream::constructor ] Hello, I'm a new Stream!" << endl;
 
-    if (readParams(params_filename) != -1)
+    params_filename = filename;
+}
+
+int Stream::initStream()
+{
+    if (readParams() != -1)
     {
         stream_inited = true;
+
+        return 0;
     }
     else
     {
         stream_inited = false;
+
+        return -1;
     }
 }
 
-bool Stream::isOpened()
+bool Stream::isInited()
 {
     return stream_inited;
+}
+
+bool Stream::isActive()
+{
+    return stream_active;
+}
+
+bool Stream::isStopped()
+{
+    return stream_stopped;
 }
 
 void Stream::showParams()
@@ -238,7 +257,9 @@ int Stream::process()
     namedWindow("Pair", WINDOW_AUTOSIZE);
 #endif
 
-    while(1)
+    stream_active = true;    
+
+    while(!isStopped())
     {
         if (!cam0Capture.read(img0)) {
             cout << "[ Stream::process ] Capture (0) error - capture reading error! " << endl;
@@ -300,5 +321,21 @@ int Stream::process()
 
     cv::destroyAllWindows();
 
+    stream_active = false;    
+
     return 0;
+}
+
+void Stream::stopStream()
+{
+    stream_stopped = true;
+
+    cout << stream_stopped;
+}
+
+void Stream::startStream()
+{
+    stream_stopped = false;
+
+    cout << stream_stopped;
 }

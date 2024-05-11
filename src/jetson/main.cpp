@@ -12,34 +12,47 @@
 #include "stream.h"
 #include "manage.h"
 
+void managerFunc(Stream *pStream)
+{
+    Manager manager = Manager(pStream);
+
+    manager.process();
+}
+
 int main(int argc, char *argv[])
 {
     Stream stream = Stream("params.json");
 
-    if (stream.isOpened())
-    {
-        stream.showParams();
+    std::thread manage_thread(managerFunc, &stream);    
 
-        std::thread manage_thread([]()
+    while (1)
+    {
+        if (!stream.isStopped())
         {
-            if (processManage() == -1)
+            stream.initStream();
+
+            if (stream.isInited())
             {
+                stream.showParams();
+
+                if (stream.process() == -1) 
+                {
+                    cout << "[main] Stream process return -1! \n";
+
+                    return -1;
+                }  
+            }
+            else
+            {
+                cout << "[main] Stream is not inited! \n";
+
                 return -1;
-            } 
-            
-            return 0;
-        });
-
-        stream.process();    
- 
-        manage_thread.join();           
+            }/*  */    
+        }
+    
     }
-    else
-    {
-        cout << "[main] Stream is not opened! \n";
 
-        return -1;
-    }/*  */
+    manage_thread.join();       
 
     return 0;
 }
