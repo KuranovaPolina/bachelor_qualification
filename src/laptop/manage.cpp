@@ -49,7 +49,7 @@ int processManage()
 
     while (1)
     {
-        cout << "Menu!\n\t1 - send 1\n\t2 - send params (test.json)" << endl;
+        cout << std::format("Menu!\n\t1 - stop\n\t2 - start\n\t3 - restart\n\t4 - send params from file {}", fileName)<< endl;
 
         cin >> command;
 
@@ -64,12 +64,12 @@ int processManage()
 
         switch(command)
         {
-            case 1:
+            case 1: case 2: case 3:
                 cout << "[ INFO processManage ] Send: " << send(sockDescr, command_buf.c_str(), strlen(command_buf.c_str()), 0) << endl;                 
 
                 break;
 
-            case 2:
+            case 4:
                 fileDescr = fopen(fileName.c_str(), "rb");
                 if (fileDescr == NULL)
                 {
@@ -102,7 +102,7 @@ int processManage()
 
         switch(command)
         {
-            case 1: case 2:
+            case 1: case 2: case 3: case 4:
                 bytes_read = recv(sockDescr, recbuf, sizeof(recbuf), 0);
 
                 if (bytes_read < 0)

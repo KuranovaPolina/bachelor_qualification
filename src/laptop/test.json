@@ -1,16 +1,16 @@
 {
-    "stream_params": {
+    "capture_params": {
+        "camera_modes": "imx219.json",
+
+        "sensor_mode": 5,
+        "display_width": 1000,
+        "display_height": 720,
+        "flip_method": 0
+    },
+    "stream_params": {    
+        "mtu": 1400,
+        "host": "192.168.0.105",
         "port": 6666,
         "concat_type": 0        
-    },
-    "stream_params1": {
-        "port": 6666,
-        "concat_type": 0,
-        "port1": 6666,
-        "concat_type1": 0         
-    },
-    "stream_params2": {
-        "port": 6666     
-    },
-    "port": 6666  
+    }
 }
