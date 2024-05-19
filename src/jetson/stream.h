@@ -29,8 +29,6 @@ private:
     int display_width = 0;
     int display_height = 0;
 
-    /* int display_framerate = 0; */  /* fps [1 - 120] */
-
     /*
         0 - identity - no rotation (default)
         1 - counterclockwise - 90 degrees
@@ -41,7 +39,18 @@ private:
         6 - vertical flip
         7 - upper-left diagonal
     */
-    int flip_method = 0;  //2
+    int flip_method0 = 0;  //2
+    int flip_method1 = 0;  //2
+
+    int left0 = 0;  //2
+    int right0 = 0;  //2
+    int top0 = 0;  //2
+    int bottom0 = 0;  //2
+
+    int left1 = 0;  //2
+    int right1 = 0;  //2
+    int top1 = 0;  //2
+    int bottom1 = 0;  //2
 
 /* Stream params. */
     int mtu = 0;  /* guint value range.  1500 bytes is the maximum mtu size. by experiment min 28 (8 udp header + 20 ip header) */

@@ -36,8 +36,18 @@ int Stream::readParams()
     sensor_mode = fs["capture_params"]["sensor_mode"];
     display_width = fs["capture_params"]["display_width"];
     display_height = fs["capture_params"]["display_height"];
-    /* display_framerate = fs["capture_params"]["display_framerate"]; */
-    flip_method = fs["capture_params"]["flip_method"];
+    flip_method0 = fs["capture_params"]["flip_method0"];
+    flip_method1 = fs["capture_params"]["flip_method1"];
+
+    left0 = fs["capture_params"]["left0"].empty() ? 0 : fs["capture_params"]["left0"];
+    right0 = fs["capture_params"]["right0"].empty() ? display_width : fs["capture_params"]["right0"];
+    top0 = fs["capture_params"]["top0"].empty() ? 0 : fs["capture_params"]["top0"];
+    bottom0 = fs["capture_params"]["bottom0"].empty() ? display_height : fs["capture_params"]["bottom0"];
+
+    left1 = fs["capture_params"]["left1"].empty() ? 0 : fs["capture_params"]["left1"];
+    right1 = fs["capture_params"]["right1"].empty() ? display_width : fs["capture_params"]["right1"];
+    top1 = fs["capture_params"]["top1"].empty() ? 0 : fs["capture_params"]["top1"];
+    bottom1 = fs["capture_params"]["bottom1"].empty() ? display_height : fs["capture_params"]["bottom1"];
 
     mtu = fs["stream_params"]["mtu"];
     host = fs["stream_params"]["host"].string();
@@ -46,6 +56,15 @@ int Stream::readParams()
 
     fs.release();
 
+    // if (left0 < 0 || right0 > display_width || top0 < 0 || bottom0 > display_height || 
+    //     left1 < 0 || right1 > display_width || top1 < 0 || bottom1 > display_height || 
+    //     left0 >= right0 || top0 >= bottom0 || left1 >= right1 || top1 >= bottom1)
+    // {
+    //     cout << "[ Stream::readParams ] Incorrect crop params ! \n";
+
+    //     return -1;        
+    // }
+
     if (concat_type < 0 || concat_type > 1)
     {
         cout << "[ Stream::readParams ] Incorrect concatenate type ! \n";
@@ -53,7 +72,7 @@ int Stream::readParams()
         return -1;
     }
 
-    if (flip_method < 0 || flip_method > 7)
+    if (flip_method0 < 0 || flip_method0 > 7 || flip_method1 < 0 || flip_method1 > 7)
     {
         cout << "[ Stream::readParams ] Incorrect flip method ! \n";
 
@@ -89,6 +108,15 @@ int Stream::readParams()
     capture_width = fs_modes[to_string(sensor_mode)]["width"];
     capture_height = fs_modes[to_string(sensor_mode)]["height"];
     capture_framerate = fs_modes[to_string(sensor_mode)]["framerate"];
+
+    if (left0 < 0 || right0 > capture_width || top0 < 0 || bottom0 > capture_height || 
+        left1 < 0 || right1 > capture_width || top1 < 0 || bottom1 > capture_height || 
+        left0 >= right0 || top0 >= bottom0 || left1 >= right1 || top1 >= bottom1)
+    {
+        cout << "[ Stream::readParams ] Incorrect crop params ! \n";
+
+        return -1;        
+    }
 
     fs_modes.release();
 
@@ -137,34 +165,39 @@ void Stream::showParams()
 {
     cout << std::format("[ Stream::showParams ] sensor_mode: {} \
 \n\tcapture_width: {} \n\tcapture_height: {} \n\tcapture_framerate: {} \
-\n\tdisplay_width: {} \n\tdisplay_height: {} \n\n\tflip_method: {} \
-\n\tmtu: {} \n\thost: {} \n\tport: {} \n\tconcat_type: {}\n",
+\n\tdisplay_width: {} \n\tdisplay_height: {} \n\tflip_method0: {} \n\tflip_method1: {} \
+\n\tleft0: {} \n\tright0: {} \n\ttop0: {} \n\tbottom0: {} \
+\n\tleft1: {} \n\tright1: {} \n\ttop1: {} \n\tbottom1: {} \
+\n\n\tmtu: {} \n\thost: {} \n\tport: {} \n\tconcat_type: {}\n",
         to_string(sensor_mode), to_string(capture_width), to_string(capture_height), to_string(capture_framerate),
-        to_string(display_width), to_string(display_height), to_string(flip_method),
+        to_string(display_width), to_string(display_height), to_string(flip_method0), to_string(flip_method1),
+        to_string(left0), to_string(right0), to_string(top0), to_string(bottom0),
+        to_string(left1), to_string(right1), to_string(top1), to_string(bottom1), 
         to_string(mtu), host, to_string(port), to_string(concat_type));
-
-    // cout << "sensor_mode: " + to_string(sensor_mode) +
-    //     "\ncapture_width: " + to_string(capture_width) +
-    //     "\ncapture_height: " + to_string(capture_height) +
-    //     "\ncapture_framerate: " + to_string(capture_framerate) +
-    //     "\ndisplay_width: " + to_string(display_width) +
-    //     "\ndisplay_height: " + to_string(display_height) +
-    //     /* "\nframerate: " + to_string(display_framerate)  + */
-    //     "\n\nflip_method: " + to_string(flip_method) +
-    //     "\nmtu: " + to_string(mtu) +
-    //     "\nhost: " + host  +
-    //     "\nport: " + to_string(port) +
-    //     "\nconcat_type: " + to_string(concat_type) << endl;
 }
 
 string Stream::capture_pipline(int sensorId)
 {
-    return std::format("nvarguscamerasrc sensor-id={} sensor-mode={} \
+    if (sensorId == 0)
+    {
+        return std::format("nvarguscamerasrc sensor-id=0 sensor-mode={} \
 ! video/x-raw(memory:NVMM), width={} , height={}, framerate={}/1 \
-! nvvidconv flip-method={} ! video/x-raw, width={}, height={}, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink",
-        to_string(sensorId), to_string(sensor_mode), 
-        to_string(capture_width), to_string(capture_height), to_string(capture_framerate),
-        to_string(flip_method), to_string(display_width), to_string(display_height));
+! nvvidconv flip-method={} left={} right={} top={} bottom={} ! video/x-raw, width={}, height={}, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink",
+        to_string(sensor_mode), to_string(capture_width), to_string(capture_height), to_string(capture_framerate),
+        to_string(flip_method0), to_string(left0), to_string(right0), to_string(top0), to_string(bottom0),
+        to_string(display_width), to_string(display_height));
+    }
+    else if (sensorId == 1)
+    {
+        return std::format("nvarguscamerasrc sensor-id=1 sensor-mode={} \
+! video/x-raw(memory:NVMM), width={} , height={}, framerate={}/1 \
+! nvvidconv flip-method={} left={} right={} top={} bottom={} ! video/x-raw, width={}, height={}, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink",
+        to_string(sensor_mode), to_string(capture_width), to_string(capture_height), to_string(capture_framerate),
+        to_string(flip_method1), to_string(left1), to_string(right1), to_string(top1), to_string(bottom1), 
+        to_string(display_width), to_string(display_height));
+    }
+
+
 
     // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + " sensor-mode=" + to_string(sensor_mode) + /*  */
     // " ! video/x-raw(memory:NVMM), width=" + to_string(capture_width) + 
