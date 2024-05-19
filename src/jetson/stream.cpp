@@ -176,7 +176,7 @@ void Stream::showParams()
         to_string(mtu), host, to_string(port), to_string(concat_type));
 }
 
-string Stream::capture_pipline(int sensorId)
+string Stream::capture_pipeline(int sensorId)
 {
     if (sensorId == 0)
     {
@@ -197,32 +197,9 @@ string Stream::capture_pipline(int sensorId)
         to_string(display_width), to_string(display_height));
     }
 
-
-
-    // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + " sensor-mode=" + to_string(sensor_mode) + /*  */
-    // " ! video/x-raw(memory:NVMM), width=" + to_string(capture_width) + 
-    // ", height=" + to_string(capture_height) + 
-    // ", framerate=" + to_string(capture_framerate) + "/1 ! nvvidconv flip-method=" + to_string(flip_method) + 
-    // // " ! nvvidconv flip-method=" + to_string(flip_method) + 
-    // " ! video/x-raw, width=" + to_string(display_width) + 
-    // ", height=" + to_string(display_height) + /* ", framerate=" + to_string(display_framerate) + /1*/
-    // ", format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
-
-    // return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
-    // " sensor-mode = " + to_string(capture_width) + 
-    // " ! video/x-raw(memory:NVMM) ! nvvidconv flip-method=" + to_string(flip_method) + 
-    // " ! video/x-raw, width=" + to_string(display_width) + ", height=" + to_string(display_height) + 
-    // ", format=BGRx, framerate=" + to_string(framerate) + "/1 ! videoconvert ! video/x-raw, format=BGR ! appsink";
-
-    // return "v4l2src device=/dev/video0 ! video/x-raw, width=" + to_string(capture_width) + 
-    // ", height=" + to_string(capture_height) + 
-    // ", framerate=" + to_string(framerate) + "/1 ! nvvidconv ! video/x-raw(memory:NVMM), width=" + 
-    // to_string(display_width) + ", height=" + to_string(display_height) + 
-    // ", format=BGRx ! nvvidconv ! video/x-raw, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink";
-
 }
 
-string Stream::streaming_pipline()
+string Stream::streaming_pipeline()
 {
     return std::format("appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! \
 videoconvert ! x264enc ! rtph264pay mtu={} ! udpsink host={} port={}",
@@ -247,12 +224,15 @@ videoconvert ! x264enc ! rtph264pay mtu={} ! udpsink host={} port={}",
 
 int Stream::process()
 {
-    string cam0pipline = capture_pipline(0);
-    string cam1pipline = capture_pipline(1);
-    string streampipline = streaming_pipline();
+    string cam0pipeline = capture_pipeline(0);
+    string cam1pipeline = capture_pipeline(1);
+    string streampipeline = streaming_pipeline();
+    
+    cout <<cam0pipeline<< endl;
 
-    VideoCapture cam0Capture(cam0pipline, CAP_GSTREAMER); /* others */
-    VideoCapture cam1Capture(cam1pipline, CAP_GSTREAMER);
+    VideoCapture cam0Capture(cam0pipeline, CAP_GSTREAMER); /* others */
+    VideoCapture cam1Capture(cam1pipeline, CAP_GSTREAMER);
+
 
     Size size;
 
@@ -271,7 +251,7 @@ int Stream::process()
         return (-1);        
     }
 
-    VideoWriter writer(streampipline, CAP_GSTREAMER, 0, capture_framerate, size, true);        
+    VideoWriter writer(streampipeline, CAP_GSTREAMER, 0, capture_framerate, size, true);   
 
     Mat img0;
     Mat img1;

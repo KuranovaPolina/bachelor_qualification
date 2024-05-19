@@ -72,9 +72,9 @@ public:
 
     void showParams();
 
-    string capture_pipline(int sensorId);
+    string capture_pipeline(int sensorId);
 
-    string streaming_pipline();
+    string streaming_pipeline();
 
     int process();
 

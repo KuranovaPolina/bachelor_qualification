@@ -5,12 +5,7 @@
         "sensor_mode": 5,
         "display_width": 1000,
         "display_height": 720,
-        "flip_method0": 5,
-        "flip_method1": 5,
-        "left0": 300,
-        "right0": 400,
-        "top0": 0,
-        "bottom0": 400
+        "flip_method": 0
     },
     "stream_params": {    
         "mtu": 1400,
