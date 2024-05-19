@@ -15,19 +15,19 @@ int main(int argc, char *argv[])
 {
     Stream stream = Stream("params.json");
 
+    std::thread manage_thread([]()
+    {
+        if (processManage() == -1)
+        {
+            return -1;
+        }
+
+        return 0;
+    });
+
     if (stream.isOpened())
     {
         stream.showParams();
-
-        std::thread manage_thread([]()
-        {
-            if (processManage() == -1)
-            {
-                return -1;
-            }
-
-            return 0;
-        });
 
         stream.process(); /*   */
 
