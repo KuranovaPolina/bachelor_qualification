@@ -7,7 +7,6 @@ if [ "$1" = "-D" ]
         shift
 
         port=6666
-
         concat_type=0
 
     else

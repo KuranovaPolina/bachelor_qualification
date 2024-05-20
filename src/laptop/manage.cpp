@@ -25,7 +25,7 @@ int processManage()
     char file_buf[4096], recbuf[1024];
     FILE *fileDescr;
     int fileReadRes, bytes_read;
-    string fileName = "test.json";
+    string fileName = "server_params.json";
 
     if (sockDescr < 0)
     {
