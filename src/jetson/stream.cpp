@@ -49,21 +49,13 @@ int Stream::readParams()
     top1 = fs["capture_params"]["top1"].empty() ? 0 : fs["capture_params"]["top1"];
     bottom1 = fs["capture_params"]["bottom1"].empty() ? display_height : fs["capture_params"]["bottom1"];
 
+    concat_type = fs["capture_params"]["concat_type"];
+
     mtu = fs["stream_params"]["mtu"];
     host = fs["stream_params"]["host"].string();
     port = fs["stream_params"]["port"];
-    concat_type = fs["stream_params"]["concat_type"];
 
     fs.release();
-
-    // if (left0 < 0 || right0 > display_width || top0 < 0 || bottom0 > display_height || 
-    //     left1 < 0 || right1 > display_width || top1 < 0 || bottom1 > display_height || 
-    //     left0 >= right0 || top0 >= bottom0 || left1 >= right1 || top1 >= bottom1)
-    // {
-    //     cout << "[ Stream::readParams ] Incorrect crop params ! \n";
-
-    //     return -1;        
-    // }
 
     if (concat_type < 0 || concat_type > 1)
     {
@@ -204,22 +196,6 @@ string Stream::streaming_pipeline()
     return std::format("appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! \
 videoconvert ! x264enc ! rtph264pay mtu={} ! udpsink host={} port={}",
         to_string(mtu), host, to_string(port));
-
-    // return "appsrc is-live=true ! video/x-raw, format=BGR, width=" + to_string(display_width * 2) +
-    // ", height = " + to_string(display_height) + 
-    // ", stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=1400 ! udpsink host=192.168.0.101 port=6666";  
-
-    // return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=" +
-    // to_string(mtu) + " ! udpsink host=" + host + " port=" + to_string(port);  
-
-
-    // return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x265enc ! rtph265pay mtu=" +
-    // to_string(mtu) + " ! udpsink host=" + host + " port=" + to_string(port); 
-
-    // return "appsrc is-live=true ! video/x-raw, format=BGR, stream-format=byte-stream ! videoconvert ! x264enc ! rtph264pay mtu=" +
-    // to_string(mtu) + " ! tcpclientsink host=" + host + " port=" + to_string(port);  
-
-    // return "appsrc is-live=true ! videoconvert ! videoscale ! video/x-raw, format=I420 ! x264enc speed-preset=ultrafast bitrate=800 ! video //x-h264 ! rtmp2sink location=rtmp://192.168.0.101:6666/test";
 }
 
 int Stream::process()
@@ -227,12 +203,11 @@ int Stream::process()
     string cam0pipeline = capture_pipeline(0);
     string cam1pipeline = capture_pipeline(1);
     string streampipeline = streaming_pipeline();
-    
+
     cout <<cam0pipeline<< endl;
 
     VideoCapture cam0Capture(cam0pipeline, CAP_GSTREAMER); /* others */
     VideoCapture cam1Capture(cam1pipeline, CAP_GSTREAMER);
-
 
     Size size;
 
@@ -250,8 +225,10 @@ int Stream::process()
 
         return (-1);        
     }
-
+          
     VideoWriter writer(streampipeline, CAP_GSTREAMER, 0, capture_framerate, size, true);   
+
+    cout <<streampipeline<< endl;
 
     Mat img0;
     Mat img1;
@@ -319,11 +296,13 @@ int Stream::process()
 
         writer.write(imgRes);
 
-#ifdef GUI
+
+// #ifdef GUI
         int keycode = cv::waitKey(1)/* & 0xff*/ ; 
         if (keycode == 27) 
-            break ;
-#endif
+            // break ;
+            stream_stopped = true;
+// #endif
     }
 
     /* Closing */
