@@ -7,7 +7,7 @@
 using namespace std;
 using namespace cv;
 
-string capture_pipline(int sensorId, int capture_width, int capture_height, int display_width, int display_height, int framerate, int flip_method)
+string capture_pipeline(int sensorId, int capture_width, int capture_height, int display_width, int display_height, int framerate, int flip_method)
 {
     /* nvarguscamerasrc (libatgus GStreamer GST-nvarguscamerasrc) or v4l2*/
     return "nvarguscamerasrc sensor-id=" + to_string(sensorId) + 
@@ -24,7 +24,7 @@ string capture_pipline(int sensorId, int capture_width, int capture_height, int 
     // " ! video/x-raw, format=(string)I420 ! appsink";
 }
 
-string streaming_pipline(int capture_width, int capture_height)
+string streaming_pipeline(int capture_width, int capture_height)
 {
     /* rtsp */
 
@@ -53,14 +53,14 @@ int main(int argc, char *argv[])
     int height = 360;
     int flip_method = 2;
 
-    string cam0pipline = capture_pipline(0, width, height, width, height, framerate, flip_method);
-    string cam1pipline = capture_pipline(1, width, height, width, height, framerate, flip_method);
-    string streampipline = streaming_pipline(width, height);
+    string cam0pipeline = capture_pipeline(0, width, height, width, height, framerate, flip_method);
+    string cam1pipeline = capture_pipeline(1, width, height, width, height, framerate, flip_method);
+    string streampipeline = streaming_pipeline(width, height);
 
-    VideoCapture cam0Capture(cam0pipline, CAP_GSTREAMER); /* others */
-    VideoCapture cam1Capture(cam1pipline, CAP_GSTREAMER);
+    VideoCapture cam0Capture(cam0pipeline, CAP_GSTREAMER); /* others */
+    VideoCapture cam1Capture(cam1pipeline, CAP_GSTREAMER);
 
-    VideoWriter writer(streampipline, 0, framerate, Size(width * 2, height), true);
+    VideoWriter writer(streampipeline, 0, framerate, Size(width * 2, height), true);
 
     Mat img0;
     Mat img1;

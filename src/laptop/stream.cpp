@@ -64,7 +64,7 @@ void Stream::showParams()
         to_string(port), to_string(concat_type));
 }
 
-string Stream::capture_pipline()
+string Stream::capture_pipeline()
 {
     return std::format("udpsrc port={} ! application/x-rtp, encoding-name=H264 ! \
  rtph264depay ! avdec_h264 ! videoconvert ! video/x-raw, format=BGR ! appsink", 
@@ -73,9 +73,9 @@ string Stream::capture_pipline()
 
 int Stream::process()
 {
-    string capPipline = capture_pipline();
+    string cappipeline = capture_pipeline();
 
-    VideoCapture cap(capPipline, CAP_GSTREAMER);
+    VideoCapture cap(cappipeline, CAP_GSTREAMER);
 
     Mat imgRes;
     Mat img1, img2;

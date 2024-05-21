@@ -24,7 +24,7 @@ public:
 
     void showParams();
 
-    string capture_pipline();
+    string capture_pipeline();
 
     int process();
 
