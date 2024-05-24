@@ -32,29 +32,29 @@ if [ "$1" = "-D" ]
     else
         echo "Use previous params"
 
-        camera_modes=$(cat 'params.json' | jq '.capture_params.camera_modes')
+        camera_modes=$(cat 'server_params.json' | jq '.capture_params.camera_modes')
 
-        sensor_mode=$(cat 'params.json' | jq '.capture_params.sensor_mode')
-        display_width=$(cat 'params.json' | jq '.capture_params.display_width')
-        display_height=$(cat 'params.json' | jq '.capture_params.display_height')
-        flip_method0=$(cat 'params.json' | jq '.capture_params.flip_method0')
-        flip_method1=$(cat 'params.json' | jq '.capture_params.flip_method1')
+        sensor_mode=$(cat 'server_params.json' | jq '.capture_params.sensor_mode')
+        display_width=$(cat 'server_params.json' | jq '.capture_params.display_width')
+        display_height=$(cat 'server_params.json' | jq '.capture_params.display_height')
+        flip_method0=$(cat 'server_params.json' | jq '.capture_params.flip_method0')
+        flip_method1=$(cat 'server_params.json' | jq '.capture_params.flip_method1')
 
-        left0=$(cat 'params.json' | jq '.capture_params.left0')
-        right0=$(cat 'params.json' | jq '.capture_params.right0')
-        top0=$(cat 'params.json' | jq '.capture_params.top0')
-        bottom0=$(cat 'params.json' | jq '.capture_params.bottom0')
+        left0=$(cat 'server_params.json' | jq '.capture_params.left0')
+        right0=$(cat 'server_params.json' | jq '.capture_params.right0')
+        top0=$(cat 'server_params.json' | jq '.capture_params.top0')
+        bottom0=$(cat 'server_params.json' | jq '.capture_params.bottom0')
 
-        left1=$(cat 'params.json' | jq '.capture_params.left1')
-        right1=$(cat 'params.json' | jq '.capture_params.right1')
-        top1=$(cat 'params.json' | jq '.capture_params.top1')
-        bottom1=$(cat 'params.json' | jq '.capture_params.bottom1')
+        left1=$(cat 'server_params.json' | jq '.capture_params.left1')
+        right1=$(cat 'server_params.json' | jq '.capture_params.right1')
+        top1=$(cat 'server_params.json' | jq '.capture_params.top1')
+        bottom1=$(cat 'server_params.json' | jq '.capture_params.bottom1')
 
-        concat_type=$(cat 'params.json' | jq '.capture_params.concat_type')
+        concat_type=$(cat 'server_params.json' | jq '.capture_params.concat_type')
 
-        mtu=$(cat 'params.json' | jq '.stream_params.mtu')
-        host=$(cat 'params.json' | jq '.stream_params.host')
-        port=$(cat 'params.json' | jq '.stream_params.port')
+        mtu=$(cat 'server_params.json' | jq '.stream_params.mtu')
+        host=$(cat 'server_params.json' | jq '.stream_params.host')
+        port=$(cat 'server_params.json' | jq '.stream_params.port')
 
         # [ -z "$camera_modes" ] && camera_modes="\"imx219.json\"" || 1
 
