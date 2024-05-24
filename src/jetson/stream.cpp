@@ -6,6 +6,7 @@
 #include "stream.h"
 
 #define GUI
+/* #undef GUI */
 
 using namespace std;
 using namespace cv;
@@ -152,6 +153,11 @@ bool Stream::isStopped()
 {
     return stream_stopped;
 }
+
+/* bool Stream::finalStopStream()
+{
+    return final_stop;
+} */
 
 void Stream::showParams()
 {
@@ -300,8 +306,8 @@ int Stream::process()
 // #ifdef GUI
         int keycode = cv::waitKey(1)/* & 0xff*/ ; 
         if (keycode == 27) 
-            // break ;
-            stream_stopped = true;
+            break ;
+            // stream_stopped = true;
 // #endif
     }
 
@@ -321,13 +327,9 @@ int Stream::process()
 void Stream::stopStream()
 {
     stream_stopped = true;
-
-    cout << stream_stopped;
 }
 
 void Stream::startStream()
 {
     stream_stopped = false;
-
-    cout << stream_stopped;
 }

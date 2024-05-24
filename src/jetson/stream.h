@@ -20,6 +20,8 @@ private:
 
     bool stream_active = false;
 
+    /* bool final_stop = false; */
+
     int sensor_mode = 0;
 
     int capture_width = 0;   /*  > 0*/
@@ -87,6 +89,8 @@ public:
     void stopStream();
 
     void startStream();
+
+    /* bool finalStopStream(); */
 };
 
 #endif  /* STREAM_H */

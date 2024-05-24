@@ -14,9 +14,16 @@
 
 void managerFunc(Stream *pStream)
 {
-    Manager manager = Manager(pStream);
+    Manager manager = Manager(pStream, "manage.json");
 
-    manager.process();
+    if (manager.initManager() == 0) 
+    {
+        manager.process();        
+    }    
+    else
+    {
+        cout << "[managerFunc] Manager is not inited! \n";
+    }
 }
 
 int main(int argc, char *argv[])
@@ -25,7 +32,7 @@ int main(int argc, char *argv[])
 
     std::thread manage_thread(managerFunc, &stream);    
 
-    while (1)
+    while (1 /* !stream.finalStopStream() */)
     {
         if (!stream.isStopped())
         {

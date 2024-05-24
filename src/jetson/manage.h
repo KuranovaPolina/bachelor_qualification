@@ -15,8 +15,19 @@ class Manager
 private:
     Stream *pStream;  
 
+    string filename;
+
+    int port;
+    string host = "0.0.0.0";
+    string params_filename = "";
+
+    
+    int readParams(); 
+
 public:
-    Manager(Stream *new_pstream);
+    Manager(Stream *new_pstream, string new_filename);
+
+    int initManager();
 
     int process();
 
