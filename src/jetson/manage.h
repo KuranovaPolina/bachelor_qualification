@@ -4,10 +4,6 @@
 
 #include "stream.h"
 
-#define PORT 8185;
-
-#define HOST "0.0.0.0"
-
 int processManage(Stream stream);
 
 class Manager
