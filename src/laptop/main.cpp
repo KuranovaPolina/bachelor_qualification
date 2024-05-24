@@ -11,19 +11,25 @@
 
 using namespace std;
 
+void managerFunc()
+{
+    Manager manager = Manager("manage.json");
+
+    if (manager.initManager() == 0) 
+    {
+        manager.process();        
+    }    
+    else
+    {
+        cout << "[managerFunc] Manager is not inited! \n";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     Stream stream = Stream("params.json");
 
-    std::thread manage_thread([]()
-    {
-        if (processManage() == -1)
-        {
-            return -1;
-        }
-
-        return 0;
-    });
+    std::thread manage_thread(managerFunc); 
 
     if (stream.isOpened())
     {

@@ -87,14 +87,16 @@ int Stream::process()
     int start_row0 = 0, end_row0 = 0, start_col0 = 0, end_col0 = 0,
     start_row1 = 0, end_row1 = 0, start_col1 = 0, end_col1 = 0;
 
+    cout << cappipeline << endl;
+
+    if (!cap.isOpened()) {
+        cout << "[ Stream::process ] Capture error - capture is not opened! "  << endl;
+
+        return -1; 
+    } 
+
     while (1)
     {
-        if (!cap.isOpened()) {
-            cout << "[ Stream::process ] Capture error - capture is not opened! "  << endl;
-
-            return -1; 
-        } 
-
         if (!cap.read(imgRes)) 
         {
             cout << "[ Stream::process ] Capture error - capture reading error! "  << endl;

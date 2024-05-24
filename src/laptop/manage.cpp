@@ -8,15 +8,61 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 
+#include <opencv2/opencv.hpp>
+
 #include "manage.h"
 
 using namespace std;
+using namespace cv;
 
-int processManage()
+Manager::Manager(string new_filename)
 {
-    struct sockaddr_in addr; 
-    int port = PORT;
-    string hostAddr = HOST;
+    filename = new_filename;
+}
+
+int Manager::readParams()
+{
+    if (filename.empty() || filename == "")
+    {
+        cout << "[ Manager::readParams ] Incorrect filename with stream params! \n";
+
+        return -1;
+    }
+//mutex file?
+    FileStorage fs(filename, FileStorage::READ);
+
+    if (!fs.isOpened())
+    {
+        cout << std::format("[ Stream::readParams ] File {} is not opened! \n",
+            params_filename);
+        
+        return -1;
+    }
+ 
+    params_filename = fs["manage_params"]["stream_params"].string();
+    host = fs["manage_params"]["host"].string();
+    port = fs["manage_params"]["port"];
+
+    fs.release();
+
+    return 0;
+}
+
+int Manager::initManager()
+{
+    if (readParams() != -1)
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+int Manager::process()
+{
+    struct sockaddr_in addr;
 
     int sockDescr = socket(AF_INET, SOCK_STREAM, 0); /* TCP */
 
@@ -25,7 +71,6 @@ int processManage()
     char file_buf[4096], recbuf[1024];
     FILE *fileDescr;
     int fileReadRes, bytes_read;
-    string fileName = "server_params.json";
 
     if (sockDescr < 0)
     {
@@ -36,7 +81,7 @@ int processManage()
 
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = inet_addr(hostAddr.c_str());   
+    addr.sin_addr.s_addr = inet_addr(host.c_str());   
 
     if(::connect(sockDescr, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
@@ -45,11 +90,11 @@ int processManage()
         return -1;
     }
 
-    cout << std::format("[ INFO processManage ] Connection to server {} port {}! \n", hostAddr, port);
+    cout << std::format("[ INFO processManage ] Connection to server {} port {}! \n", host, port);
 
     while (1)
     {
-        cout << std::format("Menu!\n\t1 - stop\n\t2 - start\n\t3 - restart\n\t4 - send params from file {}", fileName)<< endl;
+        cout << std::format("Menu!\n\t1 - stop\n\t2 - start\n\t3 - restart\n\t4 - send params from file {}", params_filename)<< endl;
 
         cin >> command;
 
@@ -70,10 +115,10 @@ int processManage()
                 break;
 
             case 4:
-                fileDescr = fopen(fileName.c_str(), "rb");
+                fileDescr = fopen(params_filename.c_str(), "rb");
                 if (fileDescr == NULL)
                 {
-                    cout << std::format("[ ERROR processManage ] Can't open file {}! ", fileName) << endl;                 
+                    cout << std::format("[ ERROR processManage ] Can't open file {}! ", params_filename) << endl;                 
                 }
                 else
                 {

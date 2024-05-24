@@ -2,10 +2,27 @@
 #ifndef MANAGE_H
 #define MANAGE_H
 
-#define PORT 8185;
+using namespace std;
 
-#define HOST "192.168.0.200"
+class Manager
+{
+private:
+    string filename;
 
-int processManage();
+    int port;
+    string host = "0.0.0.0";
+    string params_filename = "";
+
+    
+    int readParams(); 
+
+public:
+    Manager(string new_filename);
+
+    int initManager();
+
+    int process();
+
+};
 
 #endif /* MANAGE_H */
