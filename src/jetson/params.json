@@ -2,11 +2,11 @@
     "capture_params": {
         "camera_modes": "imx219.json",
 
-        "sensor_mode": 0,
+        "sensor_mode": 4,
         "display_width": 640,
         "display_height": 360,
-        "flip_method0": 0,
-        "flip_method1": 0,
+        "flip_method0": 2,
+        "flip_method1": 2,
 
         "left0": 0,
         "right0": 640,
@@ -14,7 +14,7 @@
         "bottom0": 360,
 
         "left1": 0,
-        "right1": 600,
+        "right1": 640,
         "top1": 0,
         "bottom1": 360,
 
