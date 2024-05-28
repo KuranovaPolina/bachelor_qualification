@@ -41,14 +41,14 @@ int Stream::readParams()
     flip_method1 = fs["capture_params"]["flip_method1"];
 
     left0 = fs["capture_params"]["left0"].empty() ? 0 : fs["capture_params"]["left0"];
-    right0 = fs["capture_params"]["right0"].empty() ? display_width : fs["capture_params"]["right0"];
+    right0 = fs["capture_params"]["right0"].empty() ? -1 : fs["capture_params"]["right0"];
     top0 = fs["capture_params"]["top0"].empty() ? 0 : fs["capture_params"]["top0"];
-    bottom0 = fs["capture_params"]["bottom0"].empty() ? display_height : fs["capture_params"]["bottom0"];
+    bottom0 = fs["capture_params"]["bottom0"].empty() ? -1 : fs["capture_params"]["bottom0"];
 
     left1 = fs["capture_params"]["left1"].empty() ? 0 : fs["capture_params"]["left1"];
-    right1 = fs["capture_params"]["right1"].empty() ? display_width : fs["capture_params"]["right1"];
+    right1 = fs["capture_params"]["right1"].empty() ? -1 : fs["capture_params"]["right1"];
     top1 = fs["capture_params"]["top1"].empty() ? 0 : fs["capture_params"]["top1"];
-    bottom1 = fs["capture_params"]["bottom1"].empty() ? display_height : fs["capture_params"]["bottom1"];
+    bottom1 = fs["capture_params"]["bottom1"].empty() ? -1 : fs["capture_params"]["bottom1"];
 
     concat_type = fs["capture_params"]["concat_type"];
 
@@ -101,6 +101,11 @@ int Stream::readParams()
     capture_width = fs_modes[to_string(sensor_mode)]["width"];
     capture_height = fs_modes[to_string(sensor_mode)]["height"];
     capture_framerate = fs_modes[to_string(sensor_mode)]["framerate"];
+
+    if (right0 == -1) right0 = capture_width;
+    if (bottom0 == -1) bottom0 = capture_height;
+    if (right1 == -1) right1 = capture_width;
+    if (bottom1 == -1) bottom1 = capture_height;
 
     if (left0 < 0 || right0 > capture_width || top0 < 0 || bottom0 > capture_height || 
         left1 < 0 || right1 > capture_width || top1 < 0 || bottom1 > capture_height || 
@@ -221,7 +226,7 @@ int Stream::process()
     {
         size = Size(display_width * 2, display_height);      
     }
-    else if (concat_type == 0)
+    else if (concat_type == 1)
     {
         size = Size(display_width, display_height * 2); 
     }
@@ -282,7 +287,7 @@ int Stream::process()
         else
         {
             cout << "[ Stream::process ] Incorrect concatenate type! " << endl;
-
+            
             return (-1);
         }
 
