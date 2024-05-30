@@ -39,13 +39,19 @@ int Manager::readParams()
         return -1;
     }
  
-    params_filename = fs["manage_params"]["stream_params"].string();
+    params_filename = fs["manage_params"]["params_filename"].string();
     host = fs["manage_params"]["host"].string();
     port = fs["manage_params"]["port"];
 
     fs.release();
 
     return 0;
+}
+
+void Manager::showParams()
+{
+    cout << std::format("[ Manager::showParams ] port: {} \n\thost: {} \n\tparams_filename: {} \n", 
+        to_string(port), host, params_filename);
 }
 
 int Manager::initManager()
@@ -71,6 +77,8 @@ int Manager::process()
     char file_buf[4096], recbuf[1024];
     FILE *fileDescr;
     int fileReadRes, bytes_read;
+
+    bool needToWait = false;
 
     if (sockDescr < 0)
     {
@@ -110,7 +118,9 @@ int Manager::process()
         switch(command)
         {
             case 1: case 2: case 3:
-                cout << "[ INFO processManage ] Send: " << send(sockDescr, command_buf.c_str(), strlen(command_buf.c_str()), 0) << endl;                 
+                cout << "[ INFO processManage ] Send: " << send(sockDescr, command_buf.c_str(), strlen(command_buf.c_str()), 0) << endl;
+
+                needToWait = true;                
 
                 break;
 
@@ -136,6 +146,8 @@ int Manager::process()
                     }
 
                     fclose(fileDescr);
+
+                    needToWait = true; 
                 }
                 break;
             
@@ -145,30 +157,23 @@ int Manager::process()
                 break;
         }
 
-        switch(command)
+        if (needToWait)
         {
-            case 1: case 2: case 3: case 4:
-                bytes_read = recv(sockDescr, recbuf, sizeof(recbuf), 0);
+            bytes_read = recv(sockDescr, recbuf, sizeof(recbuf), 0);
 
-                if (bytes_read < 0)
-                {
-                    cout << "[ ERROR processManage ] Message can't be recieved! " << endl;
-                }
-                else if (bytes_read == 0)
-                {
-                    cout << "[ ERROR processManage ] Server is turned off! " << endl;
-                }
-                else
-                {
-                    cout << std::format("[ INFO processManage ] Rec: {} \n", string(recbuf, 0, bytes_read));
-                }
-                    
-                break;
-            
-            default:
-                cout << "[ processManage ] Incorrect menu value! " << endl;
-
-                break;
+            if (bytes_read < 0)
+            {
+                cout << "[ ERROR processManage ] Message can't be recieved! " << endl;
+            }
+            else if (bytes_read == 0)
+            {
+                cout << "[ ERROR processManage ] Server is turned off! " << endl;
+            }
+            else
+            {
+                cout << std::format("[ INFO processManage ] Rec: {} \n", string(recbuf, 0, bytes_read));
+            }
+           
         }
     }
 

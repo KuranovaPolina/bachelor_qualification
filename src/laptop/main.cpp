@@ -17,6 +17,7 @@ void managerFunc()
 
     if (manager.initManager() == 0) 
     {
+        manager.showParams();
         manager.process();        
     }    
     else
@@ -35,9 +36,9 @@ int main(int argc, char *argv[])
     {
         stream.showParams();
 
-        stream.process(); /*   */
+        stream.process(); /*    */
 
-        manage_thread.join();
+        
     }
     else
     {
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
 
         return -1;
     } 
+
+    manage_thread.join();
     
     return 0;
 }

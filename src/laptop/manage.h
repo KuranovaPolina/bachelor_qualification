@@ -19,6 +19,8 @@ private:
 public:
     Manager(string new_filename);
 
+    void showParams();
+
     int initManager();
 
     int process();

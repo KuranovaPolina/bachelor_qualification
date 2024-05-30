@@ -87,8 +87,6 @@ int Stream::process()
     int start_row0 = 0, end_row0 = 0, start_col0 = 0, end_col0 = 0,
     start_row1 = 0, end_row1 = 0, start_col1 = 0, end_col1 = 0;
 
-    cout << cappipeline << endl;
-
     if (!cap.isOpened()) {
         cout << "[ Stream::process ] Capture error - capture is not opened! "  << endl;
 
@@ -103,9 +101,6 @@ int Stream::process()
 
             return -1; 
         }
-
-        // namedWindow("Video", WINDOW_AUTOSIZE);
-        // imshow("Video", imgRes);
 
         s = imgRes.size();
 
