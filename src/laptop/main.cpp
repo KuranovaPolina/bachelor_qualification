@@ -32,13 +32,13 @@ int main(int argc, char *argv[])
 
     std::thread manage_thread(managerFunc); 
 
-    if (stream.isOpened())
+    stream.initStream();
+
+    if (stream.isInited())
     {
         stream.showParams();
 
-        stream.process(); /*    */
-
-        
+        stream.process();
     }
     else
     {

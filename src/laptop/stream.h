@@ -11,16 +11,18 @@ using namespace std;
 class Stream
 {
 private:
+    string params_filename;
+
     bool stream_inited = false;
 
     int port = 0;
 
     int concat_type = 0;
 
-    int readParams(string params_filename);
+    int readParams();
 
 public:
-    Stream(string params_filename);
+    Stream(string filename);
 
     void showParams();
 
@@ -28,7 +30,9 @@ public:
 
     int process();
 
-    bool isOpened();
+    bool isInited();
+
+    int initStream();
 };
 
 #endif /* STREAM_H */

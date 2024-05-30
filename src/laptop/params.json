@@ -1,6 +1,6 @@
 {
     "stream_params": {
         "port": 6666,
-        "concat_type": 0        
+        "concat_type": 1        
     }
 }

@@ -8,7 +8,7 @@
         "flip_method0": 2,
         "flip_method1": 2,
 
-        "concat_type": 1
+        "concat_type": 3
     },
     "stream_params": {
         "mtu": 1400,

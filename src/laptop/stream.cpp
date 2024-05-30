@@ -9,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-int Stream::readParams(string params_filename)
+int Stream::readParams()
 {
     if (params_filename.empty() || params_filename == "")
     {
@@ -43,17 +43,30 @@ int Stream::readParams(string params_filename)
     return 0;
 }
 
-Stream::Stream(string params_filename)
+Stream::Stream(string filename)
 {
     cout << "[ Stream constructor ] Hello, I'm a new Stream!" << endl;
 
-    if (readParams(params_filename) != -1)
-    {
-       stream_inited = true; 
-    }   
+    params_filename = filename;
 }
 
-bool Stream::isOpened()
+int Stream::initStream()
+{
+    if (readParams() != -1)
+    {
+       stream_inited = true; 
+
+       return 0;
+    }   
+    else
+    {
+       stream_inited = false; 
+
+       return -1;        
+    }
+}
+
+bool Stream::isInited()
 {
     return stream_inited;
 }
