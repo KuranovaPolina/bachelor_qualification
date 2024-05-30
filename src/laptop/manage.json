@@ -1,7 +1,7 @@
 {
     "manage_params": {
-        "port": 7777,
+        "params_filename": "server_params.json",
         "host": "192.168.0.200",
-        "params_filename": "server_params.json"
+        "port": 7777
     }
 }
