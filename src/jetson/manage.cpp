@@ -42,7 +42,7 @@ int Manager::readParams()
         return -1;
     }
  
-    params_filename = fs["manage_params"]["stream_params"].string();
+    params_filename = fs["manage_params"]["params_filename"].string();
     host = fs["manage_params"]["host"].string();
     port = fs["manage_params"]["port"];
 

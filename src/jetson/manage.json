@@ -1,7 +1,7 @@
 {
     "manage_params": {
-        "stream_params": "params123.json",
+        "params_filename": "params.json",
         "host": "192.168.0.200",
-        "port": 8185
+        "port": 7777
     }
 }
