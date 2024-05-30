@@ -63,6 +63,12 @@ int Manager::initManager()
     }
 }
 
+void Manager::showParams()
+{
+    cout << std::format("[ Stream::showParams ] sensor_mode: {} \n\tcapture_width: {} \n\tdisplay_width: {}\n",
+        to_string(port), host, params_filename);
+}
+
 int Manager::process()
 {
     struct sockaddr_in addr, newAddr;

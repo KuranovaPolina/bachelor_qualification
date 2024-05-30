@@ -23,6 +23,8 @@ private:
 public:
     Manager(Stream *new_pstream, string new_filename);
 
+    void showParams();
+
     int initManager();
 
     int process();

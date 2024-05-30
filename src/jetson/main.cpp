@@ -18,6 +18,7 @@ void managerFunc(Stream *pStream)
 
     if (manager.initManager() == 0) 
     {
+        manager.showParams();
         manager.process();        
     }    
     else
