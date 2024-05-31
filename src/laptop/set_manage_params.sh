@@ -29,10 +29,10 @@ while [ "$#" -gt 0 ]
 done
 
 echo "{
-    \"stream_params\": {
-        \"port\": $port,
+    \"manage_params\": {
+        \"params_filename\": $params_filename,
         \"host\": $host,
-        \"params_filename\": $params_filename
+        \"port\": $port
     }
 }" > manage.json
 
